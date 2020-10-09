@@ -1,0 +1,33 @@
+### 晨测
+一.nodejs轮询机制
+        1.nodeJS使用了第三方库libuv，nodeJS会把一些异步操作（I/O、文件的读写）交给libuv处理。nodejs的主线程没有必要等待，可以继续处理其他事情。
+        2.libuv会开启多个线程去执行这些异步操作，当异步代码操作完毕以后，会把回调函数放到回调队列中，主线程在适当的时候回去轮询回调队列。
+
+        3.nodeJs把异步代码分为了两大类，分别是微任务和宏任务。微任务优先宏任务执行。
+
+        4.宏任务也是根据异步代码不同，而产生多种回调队列，nodejs会依次轮询这几个回调队列：timers、pendding callback、idle、poll、check、close
+
+二.微任务和宏任务
+        1.nodejs把所有的异步操作代码分为了微任务代码和宏任务代码
+        2.nodejs会优先执行微任务代码，然后才执行宏任务代码
+        3.微任务：process.nextTick，Promise的then\catch\finally、queueMicrotask
+        4.process.nextTick一定是最先执行，其他微任务根据书写代码依次执行
+        5.在宏任务每次执行下一个阶段之前，都会去检查微任务队列中是否有微任务需要执行，然后才会执行下一个阶段
+
+三.nodejs模块化的暴露和引入
+1.暴露
+module.exports.add=add
+引入方式:const {add}=require('路径')
+
+2.暴露
+module.exports=add;
+引入:const add=require('路径')
+
+3.暴露
+exports.add=add;
+引入:const {add}=require('路径')
+
+四.分析module.exports和exports的区别
+1.module.exports对象就是你要暴露出去的对象
+2.nodejs还提供了一个简易的暴露方式,直接使用exports
+  exports对象指向的其实就是moudle.exports对象
